@@ -23,6 +23,7 @@ include 'include/header.php';
     <li><a href="views/break.php">Ejemplo Break: Primer Número Divisible por 7</a></li>
     <li><a href="views/continue.php">Ejemplo Continue: Números Impares</a></li>
     <li><a href="views/foreach.php">Ejemplo Foreach: Lista de Nombres</a></li>
+    <li><a href="views/correo.php">Enviar Correo</a></li>
 </ul>
 
 <?php include 'include/footer.php'; ?>

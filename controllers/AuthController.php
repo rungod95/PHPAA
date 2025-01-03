@@ -12,17 +12,18 @@ $db = $database->getConnection();
 $userModel = new User($db);
 
 if ($action === 'register') {
-    $username = trim($_POST['username'] ?? '');
-    $password = trim($_POST['password'] ?? '');
+    try {
+        $username = trim($_POST['username'] ?? '');
+        $password = trim($_POST['password'] ?? '');
 
-    if (!empty($username) && !empty($password)) {
-        if ($userModel->register($username, $password)) {
+        if (!empty($username) && !empty($password)) {
+            $userModel->register($username, $password);
             echo "Usuario registrado correctamente. <a href='../views/login.php'>Iniciar sesión</a>";
         } else {
-            echo "Error al registrar el usuario. Es posible que el nombre de usuario ya exista.";
+            echo "Por favor, completa todos los campos.";
         }
-    } else {
-        echo "Por favor, completa todos los campos.";
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage();
     }
 }
 
@@ -34,6 +35,13 @@ if ($action === 'login') {
         $user = $userModel->login($username, $password);
         if ($user) {
             $_SESSION['user'] = $user;
+
+            // Establecer cookie si el usuario selecciona "Recordarme"
+            if (isset($_POST['remember_me']) && $_POST['remember_me'] === 'on') {
+                setcookie('username', $username, time() + (86400 * 30), "/"); // 30 días
+                setcookie('password', $password, time() + (86400 * 30), "/"); // 30 días
+            }
+
             header('Location: ../index.php');
             exit;
         } else {
@@ -44,11 +52,18 @@ if ($action === 'login') {
     }
 }
 
+
 if ($action === 'logout') {
     session_unset();
     session_destroy();
+
+    // Eliminar cookies
+    setcookie('username', '', time() - 3600, "/");
+    setcookie('password', '', time() - 3600, "/");
+
     header('Location: ../views/login.php');
     exit;
 }
+
 
 ?>
